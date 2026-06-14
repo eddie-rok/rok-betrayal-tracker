@@ -31,7 +31,7 @@ The extension seamlessly blends into your existing stat-checking workflow. Here 
 
 | Feature | Visual Preview | How It Works |
 | :--- | :---: | :--- |
-| **Instant Threat Glow** | <img src="PASTE_YOUR_SCREENSHOT_URL_HERE" width="180px" alt="Border Alert"> | Automatically scans the page DOM for kingdom IDs. If matched against the centralized CSV database, it injects a highly visible **red warning border** around the profile metrics instantly. |
+| **Instant ID** | Poop Icon | Automatically scans the page DOM for kingdom IDs. If matched against the centralized CSV database, it injects a highly visible poop icon next to the kingdom number instantly. |
 | **Contextual Tooltips** | *(Hover over element)* | Hovering your mouse over any flagged kingdom element reveals a native browser tooltip displaying the verified **Type of Betrayal** reason fetched directly from the central repository. |
 | **No-Lag Integration** | ⚡ | Because the database is fully cached inside your local browser storage (`chrome.storage.local`), elements are evaluated in microseconds as the page loads—no loading spinners, no API delays. |
 
