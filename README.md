@@ -1,7 +1,7 @@
 # RoK Betrayal Tracker (Chrome Extension)
 
 **Author:** Eddie (Alliance 15KL, Kingdom 2415)  
-**Version:** 1.9  
+**Version:** 2.0  
 
 A lightweight, automated Google Chrome Extension that cross-references active Rise of Kingdoms player/kingdom profiles against a centralized, public database of known KvK agreement violations and betrayals. 
 
@@ -107,19 +107,6 @@ Until this extension is published directly to the Chrome Web Store, you can run 
 4. **Load the Unpacked Project:** Click **Load unpacked** in the top-left corner.
 5. **Select Folder:** Select the root directory containing your `manifest.json`, `background.js`, and `content.js` files.
 6. **Done!** The tracker icon will now appear in your extension tray.
-
----
-
-## ⚠️ Known Layout Issues & Styling Quirks
-
-Because websites like Heroscroll and RoKMetrics dynamically update their data tables using JavaScript frameworks, our extension's visual overlays can sometimes conflict with their native page layouts. 
-
-Here are the currently known visual quirks and why they happen:
-
-* **RoKMetrics Row Compression:** When changing the page results display size (e.g., switching from showing 10 results to 50 results), the extension's warning box can occasionally cause the entire row of a flagged kingdom to break its alignment and compress completely inside the very first cell.
-* **Heroscroll Homepage Compression:** Similar to RoKMetrics, when viewing lists on the main homepage of Heroscroll, a flagged kingdom's data columns might lose their spacing and collapse entirely into the first column instead of spreading out normally.
-  * *Why this happens:* These platforms use strict structural CSS grids. Injected layout wrappers or tooltips can trick the browser into treating the row as a single data cell. A simple page refresh (`F5`) fixes this instantly.
-* **Heroscroll Hover Artifacts:** When hovering your mouse over a highlighted element on Heroscroll, an additional decorative icon (such as a poop emoji) or tooltip alignment shift may appear out of place. This is caused by our custom CSS properties overlapping with Heroscroll's native hover pseudo-classes.
 
 ---
 
