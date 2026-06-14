@@ -11,7 +11,7 @@ Instead of manually verifying kingdom histories, this extension automatically in
 
 ## 🚀 Features
 
-* **Instant Visual Flags:** Highlights untrustworthy kingdoms with real-time border alerts and warning styling.
+* **Instant Visual Flag:** Highlights untrustworthy kingdoms with a styling that accurately depicts their behavior.
 * **Contextual Explanations:** Hover over flagged elements to see the official `Type of Betrayal` reason natively inside your browser.
 * **Zero Performance Lag:** Downloads and caches the centralized database locally in your browser storage once every 4 hours. Page rendering remains lightning-fast without hammering external network APIs.
 * **100% Client-Side:** No login required, no data collection, and completely open-source.
