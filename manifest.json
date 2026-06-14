@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "RoK Betrayal Tracker",
+  "version": "1.9",
+  "author": "Eddie (Alliance 15KL, Kingdom 2415)",
+  "description": "Flags untrustworthy kingdoms on RoK stat websites.",
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://docs.google.com/*",
+    "https://heroscroll.com/*",
+    "https://app.rokstats.online/*",
+    "https://beta.prokingdoms.com/*",
+    "https://rokmetrics.com/*",
+    "https://www.statsmasterdatahub.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://heroscroll.com/*",
+        "https://app.rokstats.online/*",
+        "https://beta.prokingdoms.com/*",
+        "https://rokmetrics.com/*",
+        "https://www.statsmasterdatahub.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "all_frames": true,
+      "run_at": "document_end"
+    }
+  ]
+}

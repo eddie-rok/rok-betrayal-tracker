@@ -1,0 +1,32 @@
+.rok-flagged {
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.rok-poop-badge {
+  cursor: help !important;
+  margin-left: 4px !important;
+  display: inline-block !important;
+  user-select: none !important;
+}
+
+.rok-global-tooltip {
+  display: none;
+  position: absolute;
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  padding: 10px 14px !important;
+  border-radius: 6px !important;
+  box-shadow: 0px 8px 24px rgba(0,0,0,0.5) !important;
+  width: 230px !important;
+  z-index: 2147483647 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  border: 1px solid #333 !important;
+  pointer-events: auto !important;
+}
+
+.rok-global-tooltip a:hover {
+  opacity: 0.8;
+}
