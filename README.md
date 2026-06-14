@@ -110,6 +110,40 @@ Until this extension is published directly to the Chrome Web Store, you can run 
 
 ---
 
+## ⚠️ Known Layout Issues & Styling Quirks
+
+Because websites like Heroscroll and RoKMetrics dynamically update their data tables using JavaScript frameworks, our extension's visual overlays can sometimes conflict with their native page layouts. 
+
+Here are the currently known visual quirks and why they happen:
+
+* **RoKMetrics Row Compression:** When changing the page results display size (e.g., switching from showing 10 results to 50 results), the extension's warning box can occasionally cause the entire row of a flagged kingdom to break its alignment and compress completely inside the very first cell.
+* **Heroscroll Homepage Compression:** Similar to RoKMetrics, when viewing lists on the main homepage of Heroscroll, a flagged kingdom's data columns might lose their spacing and collapse entirely into the first column instead of spreading out normally.
+  * *Why this happens:* These platforms use strict structural CSS grids. Injected layout wrappers or tooltips can trick the browser into treating the row as a single data cell. A simple page refresh (`F5`) fixes this instantly.
+* **Heroscroll Hover Artifacts:** When hovering your mouse over a highlighted element on Heroscroll, an additional decorative icon (such as a poop emoji) or tooltip alignment shift may appear out of place. This is caused by our custom CSS properties overlapping with Heroscroll's native hover pseudo-classes.
+
+---
+
+## 🔧 How to Turn Off the Extension (Temporarily or Permanently)
+
+If you are using these statistics websites for work where layout spacing needs to be pristine, or if you simply want to pause the tracker without uninstalling it, Google Chrome gives you native control over when and where the extension runs.
+
+### Method 1: Turn Off the Extension for One Specific Website
+If you want the extension to work on Heroscroll but want to disable it entirely on RoKMetrics:
+1. Navigate to the website where you want to disable it (e.g., `rokmetrics.com`).
+2. Click the **Extensions puzzle piece icon** 🧩 in the top-right corner of your browser.
+3. Click the **three dots** next to **RoK Betrayal Tracker**.
+4. Hover over **This can read and change site data** and change the setting from *On all sites* or *On this site* to **When you click the extension**.
+5. Refresh the page. The extension is now completely blocked from running on that domain unless you manually click its icon.
+
+### Method 2: Toggle the Entire Extension Off (Temporarily)
+If you want to pause the tracker across all websites without deleting it:
+1. Open a new tab and go to `chrome://extensions/`.
+2. Locate the card for **RoK Betrayal Tracker**.
+3. Toggle the blue switch in the bottom-right corner of the card to **Off**.
+4. Toggle it back to **On** whenever you are ready to track KvK betrayals again.
+
+---
+
 ## 📁 Repository Structure
 
 ```text
