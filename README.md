@@ -60,9 +60,11 @@ Because this project is entirely open-source, you do not have to take our word f
 
 1. Open the `manifest.json` file in this repository.
 2. Locate the `"host_permissions"` and `"matches"` arrays. 
-3. You will see that it strictly hardcodes only the specific RoK stat sites (like `heroscroll.com` and `rokstats.online`) and the public Google Sheets data stream. 
+3. You will see that it strictly limits network traffic to:
+   * The specific RoK stat sites (like `heroscroll.com` and `rokstats.online`) so it can highlight players on your screen.
+   * `https://docs.google.com/*` which is used **strictly in the background** so the extension can download the public database CSV file.
 
-Google Chrome strictly enforces these rules at the browser level. If the extension ever attempted to look at another website, Chrome would instantly block it and disable the extension.
+Google Chrome strictly enforces these rules at the browser level. Because `docs.google.com` is not in the `"matches"` array for content scripts, the extension is completely blind and cannot read or touch your screen if you visit your personal Google Docs or Google Drive.
 
 ---
 
