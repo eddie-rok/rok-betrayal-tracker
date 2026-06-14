@@ -1,32 +1,43 @@
+/* Maintain normal text configurations */
 .rok-flagged {
-  display: inline-flex !important;
-  align-items: center !important;
+  display: table-cell !important;
 }
 
+/* Configured to flow natively as an inline word boundaries item */
 .rok-poop-badge {
   cursor: help !important;
-  margin-left: 4px !important;
-  display: inline-block !important;
+  margin-left: 6px !important;
+  display: inline-block !important; 
+  vertical-align: middle !important;
+  font-size: 14px !important;
   user-select: none !important;
+  line-height: 1 !important;
 }
 
-.rok-global-tooltip {
+/* Standalone canvas overlay layout configuration layer */
+.rok-global-canvas-tooltip {
   display: none;
-  position: absolute;
-  background-color: #1a1a1a !important;
+  position: absolute !important;
+  background-color: #161616 !important;
   color: #ffffff !important;
-  padding: 10px 14px !important;
-  border-radius: 6px !important;
-  box-shadow: 0px 8px 24px rgba(0,0,0,0.5) !important;
-  width: 230px !important;
-  z-index: 2147483647 !important;
+  padding: 12px 14px !important;
+  border-radius: 8px !important;
+  box-shadow: 0px 12px 32px rgba(0,0,0,0.7) !important;
+  width: 252px !important;
+  white-space: normal !important; 
+  z-index: 2147483647 !important; /* Forces layout context above ALL outer dashboard framing wrappers */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
   line-height: 1.4 !important;
-  border: 1px solid #333 !important;
-  pointer-events: auto !important;
+  border: 1px solid #3a3a3a !important;
+  pointer-events: auto !important; /* Enables interaction with internal hypermedia link points */
+  text-align: left !important;
 }
 
-.rok-global-tooltip a:hover {
-  opacity: 0.8;
+.rok-global-canvas-tooltip a {
+  transition: opacity 0.2s ease;
+}
+
+.rok-global-canvas-tooltip a:hover {
+  opacity: 0.8 !important;
 }

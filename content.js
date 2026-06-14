@@ -1,44 +1,44 @@
 let betrayalMap = {};
 let isInjecting = false;
 let globalTooltip = null;
-let hideTimeout = null;
+let tooltipHideTimeout = null;
 
 // Initial database bootstrap check
 chrome.storage.local.get(["betrayalData"], (result) => {
   if (result.betrayalData) {
     betrayalMap = result.betrayalData;
-    console.log("RoK Extension: Restored Deep Shadow DOM Scanner Active. Unique entries mapped:", Object.keys(betrayalMap).length);
+    console.log("RoK Extension: Universal Leaf Framework Active. Unique entries mapped:", Object.keys(betrayalMap).length);
   } else {
     console.log("RoK Extension: Storage cache empty. Waiting on database stream...");
   }
-  createGlobalTooltip();
+  createGlobalBodyTooltip();
   initObserverAndHeartbeat();
 });
 
-function createGlobalTooltip() {
-  if (window.top !== window) return;
-  
+// FIXED: Tooltip is attached to the highest layer of document.body, avoiding iframe bounding cuts
+function createGlobalBodyTooltip() {
+  if (document.querySelector('.rok-global-canvas-tooltip')) return;
   globalTooltip = document.createElement('div');
-  globalTooltip.className = 'rok-global-tooltip';
+  globalTooltip.className = 'rok-global-canvas-tooltip';
   document.body.appendChild(globalTooltip);
 
   globalTooltip.addEventListener('mouseenter', () => {
-    if (hideTimeout) clearTimeout(hideTimeout);
+    if (tooltipHideTimeout) clearTimeout(tooltipHideTimeout);
   });
 
   globalTooltip.addEventListener('mouseleave', () => {
-    startHideTimer();
+    dismissTooltipWithDelay();
   });
 }
 
 function initObserverAndHeartbeat() {
-  targetedGridScan();
+  scanGridCanvas();
 
-  if (window.location.hostname.includes("statsmasterdatahub.com")) {
+  if (window.location.hostname.includes("statsmasterdatahub.com") || window.location.hostname.includes("rokmetrics.com")) {
     console.log("RoK Extension: Looker Studio canvas heartbeat loop armed.");
     let runCount = 0;
     const heartbeatInterval = setInterval(() => {
-      targetedGridScan();
+      scanGridCanvas();
       runCount++;
       if (runCount >= 10) {
         clearInterval(heartbeatInterval);
@@ -47,17 +47,16 @@ function initObserverAndHeartbeat() {
     }, 2000);
   }
 
-  // ⚡ FIXED OBSERVER: Strict injection lock checks to prevent infinite layout freeze loops
   const observer = new MutationObserver((mutations) => {
-    if (isInjecting) return; // Drop execution instantly if we caused the change
+    if (isInjecting) return;
     
     let shouldScan = false;
-    for (let mutation of mutations) {
-      if (mutation.addedNodes.length > 0) {
-        // Skip changes caused directly by our own badge class
-        const targetNode = mutation.addedNodes[0];
+    for (let i = 0; i < mutations.length; i++) {
+      if (mutations[i].addedNodes.length > 0) {
+        const targetNode = mutations[i].addedNodes[0];
+        // Instantly bypass checks if mutated nodes belong to our own injections
         if (targetNode.nodeType === Node.ELEMENT_NODE && 
-           (targetNode.classList.contains('rok-poop-badge') || targetNode.classList.contains('rok-flagged'))) {
+           (targetNode.classList.contains('rok-poop-badge') || targetNode.hasAttribute('data-rok-tracked'))) {
           continue;
         }
         shouldScan = true;
@@ -66,184 +65,120 @@ function initObserverAndHeartbeat() {
     }
     
     if (shouldScan) {
-      targetedGridScan();
+      scanGridCanvas();
     }
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-function targetedGridScan() {
-  if (isInjecting) return; // Safety lock block
-  
-  const dashboardContainers = document.querySelectorAll('lego-table, [role="grid"], [role="row"], .gviz-table-page, iframe, table, tr, td');
-  
-  if (dashboardContainers.length === 0) {
-    deepScan(document.body);
-    return;
-  }
-
-  dashboardContainers.forEach(container => {
-    deepScan(container);
-    if (container.shadowRoot) {
-      deepScan(container.shadowRoot);
-    }
-  });
-}
-
-function deepScan(node) {
-  if (!node || isInjecting) return;
-
-  if (node.nodeType === Node.ELEMENT_NODE) {
-    const tagName = node.tagName.toUpperCase();
-    if (!['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'TH', 'SELECT'].includes(tagName)) {
-      checkAndInjectBadge(node);
-    }
-  }
-
-  if (node.shadowRoot) {
-    deepScan(node.shadowRoot);
-  }
-
-  let child = node.firstChild;
-  while (child) {
-    if (child.nodeType === Node.ELEMENT_NODE) {
-      deepScan(child);
-    }
-    child = child.nextSibling;
-  }
-}
-
-function checkAndInjectBadge(el) {
+function scanGridCanvas() {
   if (isInjecting) return;
+
+  // Direct flat selector targeting layout cell text endpoints across Heroscroll, RoKStats, and RoKMetrics
+  const textLeaves = document.querySelectorAll('td, span, a, p, b, div.kd-cell, .table-cell, [role="gridcell"]');
   
-  // Guard 1: Prevent parsing elements that already have our tracking badges
-  if (el.children.length > 0 && !el.querySelector('.rok-poop-badge')) {
-    if (el.children[0].className !== 'rok-poop-badge') return;
-  }
+  for (let i = 0; i < textLeaves.length; i++) {
+    const cell = textLeaves[i];
+    
+    // GUARD 1: Prevent duplicate scans or duplicate emojis if element is already badged
+    if (cell.hasAttribute('data-rok-tracked') || cell.querySelector('.rok-poop-badge')) continue;
 
-  const text = (el.innerText || el.textContent || "").trim();
-  const match = text.match(/(?:KD|K|#)?\s*([123]\d{3})\b/i);
+    const text = (cell.textContent || cell.innerText || "").trim();
+    
+    // Strict match to ensure we are only catching exact 4-digit kingdom boundaries
+    const match = text.match(/\b([123]\d{3})\b/);
 
-  if (match) {
-    const kdNum = match[1].trim();
-    const lookupKey = String(kdNum);
+    if (match) {
+      const lookupKey = String(match[1].trim());
 
-    if (betrayalMap && betrayalMap[lookupKey] && betrayalMap[lookupKey].length > 0) {
-      const contextText = (el.className + " " + el.parentElement?.className + " " + text).toLowerCase();
-      
-      // Safety rule adjustments: don't flag labels or date headers
-      if (contextText.includes('rank') || contextText.includes('score') || contextText.includes('date') || contextText.includes('power')) return;
+      if (betrayalMap && betrayalMap[lookupKey] && betrayalMap[lookupKey].length > 0) {
+        // Trace back the nearest common table row structural container block
+        const parentRow = cell.closest('tr, [role="row"], .table-row, .grid-row, .flex-row') || cell.parentElement;
+        
+        // GUARD 2: Also check if parent row has already processed a tracking flag to stop layered duplicate matches
+        if (parentRow && parentRow.hasAttribute('data-rok-tracked')) continue;
 
-      const targetCount = betrayalMap[lookupKey].length;
-      const currentCount = el.querySelectorAll('.rok-poop-badge').length;
+        const contextText = ((cell.className || "") + " " + (parentRow?.className || "") + " " + text).toLowerCase();
+        
+        // GUARD 3: Skip processing text if context belongs to an explicit Rank, Score, Power or Date field
+        if (contextText.includes('rank') || contextText.includes('score') || contextText.includes('power') || contextText.includes('date') || contextText.includes('alliance')) {
+          continue;
+        }
 
-      if (currentCount === targetCount) return;
+        // Additional sanity checks for standalone naked ranking strings inside metric layouts
+        if (cell.parentElement) {
+          const siblingText = (cell.parentElement.textContent || "").toLowerCase();
+          if (siblingText.includes('rank') && text.length <= 3) continue; 
+        }
 
-      injectSafeWarnings(el, lookupKey, betrayalMap[lookupKey]);
+        injectSafeWarning(cell, parentRow, lookupKey, betrayalMap[lookupKey][0]);
+      }
     }
   }
 }
 
-function getSecureCoords(badge) {
-  let rect = badge.getBoundingClientRect();
-  return {
-    top: rect.top + window.scrollY,
-    left: rect.left + window.scrollX,
-    width: rect.width
-  };
-}
-
-function injectSafeWarnings(element, kdNum, incidentsList) {
-  isInjecting = true; // 🔒 LOCK ON: Freeze mutation observer checks
+function injectSafeWarning(targetCell, parentRow, kdNum, entry) {
+  isInjecting = true; // 🔒 LOCK ON: Freeze mutation handlers
   
   try {
-    const existingBadges = element.querySelectorAll('.rok-poop-badge');
-    existingBadges.forEach(b => b.remove());
+    // Apply execution isolation locks to BOTH elements immediately
+    targetCell.setAttribute('data-rok-tracked', 'true');
+    if (parentRow) parentRow.setAttribute('data-rok-tracked', 'true');
+    
+    targetCell.classList.add('rok-flagged');
 
-    element.classList.add('rok-flagged');
+    const badge = document.createElement('span');
+    badge.className = 'rok-poop-badge';
+    badge.textContent = '💩';
+    
+    badge.addEventListener('mouseenter', (e) => {
+      if (tooltipHideTimeout) clearTimeout(tooltipHideTimeout);
 
-    incidentsList.forEach((data, index) => {
-      const badge = document.createElement('span');
-      badge.className = 'rok-poop-badge';
-      badge.textContent = '💩';
-      
-      badge.addEventListener('mouseenter', (e) => {
-        const coords = getSecureCoords(badge);
+      // Render overlay body on our top-level global viewport container canvas
+      globalTooltip.innerHTML = `
+        <strong>Kingdom ${kdNum} Alert Status</strong><br>
+        <hr style="border:0; border-top:1px solid #444; margin:5px 0;">
+        📅 <strong>Reported On:</strong> ${entry.reportedOn || "Older Entry"}<br>
+        ⚠️ <strong>Type:</strong> ${entry.type || "Betrayal"}<br>
+        🌐 <strong>Source:</strong> ${entry.source || "Database"}<br>
+        <a href="${entry.link || '#'}" target="_blank" style="color: #5865F2; text-decoration: underline; display: block; margin-top: 6px; font-weight: bold;">Open Discord Evidence</a>
+      `;
 
-        window.top.postMessage({
-          action: "showRokTooltip",
-          screenY: e.pageY || coords.top,
-          screenX: e.pageX || coords.left,
-          top: coords.top,
-          left: coords.left,
-          width: coords.width,
-          kdNum: kdNum,
-          index: index,
-          total: incidentsList.length,
-          data: data
-        }, "*");
-      });
+      globalTooltip.style.display = 'block';
 
-      badge.addEventListener('mouseleave', () => {
-        window.top.postMessage({ action: "hideRokTooltip" }, "*");
-      });
+      // Capture dynamic bounding rects to prevent cutoffs across frames
+      const rect = badge.getBoundingClientRect();
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-      element.appendChild(badge);
+      globalTooltip.style.top = `${rect.top + scrollTop - globalTooltip.offsetHeight - 8}px`;
+      globalTooltip.style.left = `${rect.left + scrollLeft - (globalTooltip.offsetWidth / 2) + (rect.width / 2)}px`;
     });
+
+    badge.addEventListener('mouseleave', () => {
+      dismissTooltipWithDelay();
+    });
+
+    targetCell.appendChild(badge);
+
   } catch (err) {
     console.error("Badge generation break:", err);
   } finally {
-    isInjecting = false; // 🔓 LOCK OFF: Safe to track external layout updates again
+    isInjecting = false; // 🔓 LOCK OFF: Safe to look for valid layouts again
   }
+}
+
+function dismissTooltipWithDelay() {
+  if (tooltipHideTimeout) clearTimeout(tooltipHideTimeout);
+  tooltipHideTimeout = setTimeout(() => {
+    if (globalTooltip) globalTooltip.style.display = 'none';
+  }, 200); // 200ms grace buffer allows user cursor access to the evidence link
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "databaseUpdated" && request.data) {
     betrayalMap = request.data;
-    console.log("RoK Extension: Front-end data map hot-reloaded successfully.", Object.keys(betrayalMap).length);
-    targetedGridScan(); 
+    scanGridCanvas(); 
   }
 });
-
-window.addEventListener("message", (event) => {
-  if (window.top !== window || !globalTooltip) return;
-  const msg = event.data;
-
-  if (msg.action === "showRokTooltip") {
-    if (hideTimeout) clearTimeout(hideTimeout);
-    
-    globalTooltip.innerHTML = `
-      <strong>Kingdom ${msg.kdNum}</strong> <span style="float:right; color:#888;">(${msg.index + 1}/${msg.total})</span><br>
-      <hr style="border:0; border-top:1px solid #444; margin:4px 0;">
-      📅 <strong>Reported On:</strong> ${msg.data.reportedOn || "Older Entry"}<br>
-      ⚠️ <strong>Type:</strong> ${msg.data.type}<br>
-      🌐 <strong>Source:</strong> ${msg.data.source}<br>
-      <a href="${msg.data.link}" target="_blank" style="color: #ff4d4d; text-decoration: underline; display: block; margin-top: 6px;">Open Discord Thread</a>
-    `;
-    
-    globalTooltip.style.display = 'block';
-    
-    let targetTop = msg.top;
-    let targetLeft = msg.left;
-
-    if (msg.top < 500 && window.scrollY > 200) {
-      targetTop = msg.screenY;
-      targetLeft = msg.screenX;
-    }
-
-    globalTooltip.style.top = `${targetTop - globalTooltip.offsetHeight - 8}px`;
-    globalTooltip.style.left = `${targetLeft - (globalTooltip.offsetWidth / 2) + (msg.width / 2)}px`;
-  }
-  
-  if (msg.action === "hideRokTooltip") {
-    startHideTimer();
-  }
-});
-
-function startHideTimer() {
-  if (hideTimeout) clearTimeout(hideTimeout);
-  hideTimeout = setTimeout(() => {
-    if (globalTooltip) globalTooltip.style.display = 'none';
-  }, 150);
-}
