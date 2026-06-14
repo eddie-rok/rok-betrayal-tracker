@@ -18,6 +18,25 @@ Instead of manually verifying kingdom histories, this extension automatically in
 
 ---
 
+## 🔍 See It In Action
+
+<!-- The Hero Demo GIF instantly captures attention -->
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/918e591d-2ea6-4f45-820e-aa8c25454a3b" alt="RoK Betrayal Tracker Demo" width="700px">
+</p>
+
+### 💡 Core Visual Features
+
+The extension seamlessly blends into your existing stat-checking workflow. Here is exactly what to look out for on supported platforms:
+
+| Feature | Visual Preview | How It Works |
+| :--- | :---: | :--- |
+| **Instant Threat Glow** | <img src="PASTE_YOUR_SCREENSHOT_URL_HERE" width="180px" alt="Border Alert"> | Automatically scans the page DOM for kingdom IDs. If matched against the centralized CSV database, it injects a highly visible **red warning border** around the profile metrics instantly. |
+| **Contextual Tooltips** | *(Hover over element)* | Hovering your mouse over any flagged kingdom element reveals a native browser tooltip displaying the verified **Type of Betrayal** reason fetched directly from the central repository. |
+| **No-Lag Integration** | ⚡ | Because the database is fully cached inside your local browser storage (`chrome.storage.local`), elements are evaluated in microseconds as the page loads—no loading spinners, no API delays. |
+
+---
+
 ## 📊 Supported RoK Platforms
 
 The extension actively listens and injects alert states onto the following community data hubs:
