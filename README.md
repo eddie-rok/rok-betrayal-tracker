@@ -3,7 +3,7 @@
 **Author:** Eddie (Alliance 15KL, Kingdom 2415)  
 **Version:** 2.0  
 
-A lightweight, automated Google Chrome Extension that cross-references active Rise of Kingdoms player/kingdom profiles against a centralized, public database of known KvK agreement violations and betrayals. 
+A lightweight, automated Google Chrome Extension that cross-references active Rise of Kingdoms kingdom numbers against a centralized, public database of known KvK agreement violations and betrayals. 
 
 Instead of manually verifying kingdom histories, this extension automatically injects visual alerts and tooltips directly into popular Rise of Kingdoms community statistic web platforms.
 
